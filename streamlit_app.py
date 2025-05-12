@@ -129,22 +129,23 @@ with right_col:
     with col2:
         st.pyplot(fig_pie)
 
-    # Feature importance and visualizations
-    st.subheader("📌 Feature Importance (Top 10)")
 
-    # Feature importance bar chart
-    importances = model.feature_importances_
-    features = df_input.columns
-    indices = importances.argsort()[-10:][::-1]  
+# Feature importance and visualizations
+st.subheader("📌 Feature Importance (Top 10)")
 
-    top_features = features[indices]
-    top_importances = importances[indices]
+# Feature importance bar chart
+importances = model.feature_importances_
+features = df_input.columns
+indices = importances.argsort()[-10:][::-1]  
 
-    fig_feat, ax_feat = plt.subplots()
-    ax_feat.barh(range(len(indices)), top_importances, align='center', color='royalblue')
-    ax_feat.set_yticks(range(len(indices)))
-    ax_feat.set_yticklabels(top_features)
-    ax_feat.invert_yaxis()  # Most important on top
-    ax_feat.set_xlabel("Importance")
-    ax_feat.set_title("Top 10 Feature Importances")
-    st.pyplot(fig_feat)
+top_features = features[indices]
+top_importances = importances[indices]
+
+fig_feat, ax_feat = plt.subplots()
+ax_feat.barh(range(len(indices)), top_importances, align='center', color='royalblue')
+ax_feat.set_yticks(range(len(indices)))
+ax_feat.set_yticklabels(top_features)
+ax_feat.invert_yaxis()  # Most important on top
+ax_feat.set_xlabel("Importance")
+ax_feat.set_title("Top 10 Feature Importances")
+st.pyplot(fig_feat)
