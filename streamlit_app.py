@@ -106,21 +106,37 @@ with right_col:
 
 
     # Feature importance and visualizations
-    st.subheader("📌 Feature Importance and Insights")
+    st.subheader("📌 Feature Importance (Top 10)")
 
     # Feature importance bar chart
     importances = model.feature_importances_
     features = df_input.columns
-    indices = np.argsort(importances)
+	indices = importances.argsort()[-10:][::-1]  
 
-    fig_feat, ax_feat = plt.subplots()
-    ax_feat.barh(range(len(indices)), importances[indices], align='center')
-    ax_feat.set_yticks(range(len(indices)))
-    ax_feat.set_yticklabels(features[indices])
-    ax_feat.set_title('Feature Importance')
+ 	top_features = features[indices]
+	top_importances = importances[indices]
+
+	fig_feat, ax_feat = plt.subplots(figsize=(6, 4))
+	ax_feat.barh(range(len(indices)), top_importances, align='center', color='royalblue')
+	ax_feat.set_yticks(range(len(indices)))
+	ax_feat.set_yticklabels(top_features)
+	ax_feat.invert_yaxis()  # Most important on top
+	ax_feat.set_xlabel("Importance")
+	ax_feat.set_title("Top 10 Feature Importances")
+	st.pyplot(fig_feat)
+	
+    # Density plot for churned vs retained
+    st.subheader("📈 Churned vs. Retained - Monthly Charges")
+    fig_kde, ax_kde = plt.subplots()
+    sns.kdeplot(data=data[data['Churn'] == 1]['MonthlyCharges'], label="Churned", shade=True, color="#ff7f0e", ax=ax_kde)
+    sns.kdeplot(data=data[data['Churn'] == 0]['MonthlyCharges'], label="Retained", shade=True, color="#1f77b4", ax=ax_kde)
+    ax_kde.set_xlabel("Monthly Charges")
+    ax_kde.set_ylabel("Density")
+    ax_kde.legend()
+    
     col1, col2 = st.columns(2)
     with col1:
-        st.pyplot(fig_feat)
+        st.pyplot(fig_kde)
 
     # Churn rate pie chart
     churn_counts = data['Churn'].value_counts()
@@ -132,12 +148,3 @@ with right_col:
     with col2:
         st.pyplot(fig_pie)
 
-    # Density plot for churned vs retained
-    st.subheader("📈 Churned vs. Retained - Monthly Charges")
-    fig_kde, ax_kde = plt.subplots()
-    sns.kdeplot(data=data[data['Churn'] == 1]['MonthlyCharges'], label="Churned", shade=True, color="#ff7f0e", ax=ax_kde)
-    sns.kdeplot(data=data[data['Churn'] == 0]['MonthlyCharges'], label="Retained", shade=True, color="#1f77b4", ax=ax_kde)
-    ax_kde.set_xlabel("Monthly Charges")
-    ax_kde.set_ylabel("Density")
-    ax_kde.legend()
-    st.pyplot(fig_kde)
