@@ -21,9 +21,21 @@ left_col, right_col = st.columns([1, 2])
 
 # Left side: Inputs (nested columns)
 with left_col:
-    st.markdown("""
-        <div style="background-color: #e6f0ff; padding: 20px; border-radius: 10px;">
-    """, unsafe_allow_html=True)
+    with st.container():
+        st.markdown(
+            """
+            <style>
+            .left-panel {
+                background-color: #e6f2ff;  /* Light blue */
+                padding: 20px;
+                border-radius: 10px;
+                height: 100%;
+            }
+            </style>
+            <div class="left-panel">
+            """,
+            unsafe_allow_html=True
+        )
     st.header("🔧 Input Features")
     col1, col2 = st.columns([1, 1])
     with col1:
@@ -42,6 +54,8 @@ with left_col:
         "Credit card (automatic)", 
         "Electronic check", 
         "Mailed check"])
+    
+    # Close the div tag
     st.markdown("</div>", unsafe_allow_html=True)
     total_charges = tenure * monthly_charges
     
