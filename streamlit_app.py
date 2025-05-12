@@ -103,7 +103,7 @@ with right_col:
 
     # Feature importance bar chart
     importances = model.feature_importances_
-    features = input_df.columns
+    features = df_input.columns
     indices = np.argsort(importances)
 
     fig_feat, ax_feat = plt.subplots()
