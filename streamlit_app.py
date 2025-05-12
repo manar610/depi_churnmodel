@@ -6,48 +6,62 @@ import pickle
 with open("churn_model.pkl", "rb") as f:
     model = pickle.load(f)
 
-st.title("Customer Churn Prediction")
-st.write("Fill the information below to predict whether a customer is likely to churn.")
+# Sidebar
+with st.sidebar:
+    st.title("ℹ️ About")
+    st.markdown("""
+    This app predicts whether a telecom customer is likely to churn based on their service usage and account details. 
+    Just fill in the information and click **Predict Churn** to get results!
+    """)
 
-# Input fields
-gender = st.selectbox("Gender", ["Male", "Female"])
-senior = st.selectbox("Senior Citizen", ["Yes", "No"])
-partner = st.selectbox("Partner", ["Yes", "No"])
-dependents = st.selectbox("Dependents", ["Yes", "No"])
-tenure = st.slider("Tenure (Months)", 0, 72, 1)
-paperless_billing = st.selectbox("Paperless Billing", ["Yes", "No"])
-monthly_charges = st.number_input("Monthly Charges", min_value=0.0)
+# Title
+st.title("📞 Customer Churn Prediction")
+st.markdown("Please fill in the customer's details below:")
+
+# Group input fields into two columns
+col1, col2 = st.columns(2)
+
+with col1:
+    gender = st.selectbox("Gender", ["Male", "Female"])
+    senior = st.selectbox("Senior Citizen", ["Yes", "No"])
+    partner = st.selectbox("Partner", ["Yes", "No"])
+    dependents = st.selectbox("Dependents", ["Yes", "No"])
+    tenure = st.slider("Tenure (Months)", 0, 72, 1)
+
+with col2:
+    paperless_billing = st.selectbox("Paperless Billing", ["Yes", "No"])
+    monthly_charges = st.number_input("Monthly Charges", min_value=0.0)
+    internet_service = st.selectbox("Internet Service", ["DSL", "Fiber optic", "No"])
+    contract = st.selectbox("Contract Type", ["Month-to-month", "One year", "Two year"])
+    payment_method = st.selectbox("Payment Method", [
+        "Bank transfer (automatic)", 
+        "Credit card (automatic)", 
+        "Electronic check", 
+        "Mailed check"])
+
+# Automatically calculated
 total_charges = tenure * monthly_charges
 
+st.markdown("---")
+st.subheader("🔍 Prediction Result")
 
-# Multi-class: InternetService
-internet_service = st.selectbox("Internet Service", ["DSL", "Fiber optic", "No"])
+# One-hot encoded fields
 internet_fiber = 1 if internet_service == "Fiber optic" else 0
 internet_no = 1 if internet_service == "No" else 0
-
-# Multi-class: Contract
-contract = st.selectbox("Contract Type", ["Month-to-month", "One year", "Two year"])
 contract_one_year = 1 if contract == "One year" else 0
 contract_two_year = 1 if contract == "Two year" else 0
-
-# Multi-class: Payment Method
-payment_method = st.selectbox("Payment Method", [
-    "Bank transfer (automatic)", 
-    "Credit card (automatic)", 
-    "Electronic check", 
-    "Mailed check"])
 payment_credit = 1 if payment_method == "Credit card (automatic)" else 0
 payment_electronic = 1 if payment_method == "Electronic check" else 0
 payment_mailed = 1 if payment_method == "Mailed check" else 0
 
-# Input dictionary with all required features
+# Input dictionary
 input_data = {
     'gender': 1 if gender == "Male" else 0,
     'SeniorCitizen': 1 if senior == "Yes" else 0,
     'Partner': 1 if partner == "Yes" else 0,
     'Dependents': 1 if dependents == "Yes" else 0,
     'tenure': tenure,
-    'PhoneService': 1,  # assumed default
+    'PhoneService': 1,  # Defaulted to 1
     'PaperlessBilling': 1 if paperless_billing == "Yes" else 0,
     'MonthlyCharges': monthly_charges,
     'TotalCharges': total_charges,
@@ -77,11 +91,15 @@ input_data = {
 # Convert to DataFrame
 df_input = pd.DataFrame([input_data])
 
-# Predict
-if st.button("Predict Churn"):
+# Prediction
+if st.button("🎯 Predict Churn"):
     prediction = model.predict(df_input)[0]
     prob = model.predict_proba(df_input)[0][1]
     if prediction == 1:
-        st.error(f"⚠️ Likely to Churn (Confidence: {prob:.2%})")
+        st.error(f"⚠️ The customer is likely to churn.\n\nConfidence: **{prob:.2%}**")
     else:
-        st.success(f"✅ Unlikely to Churn (Confidence: {1 - prob:.2%})")
+        st.success(f"✅ The customer is unlikely to churn.\n\nConfidence: **{1 - prob:.2%}**")
+
+# Footer
+st.markdown("---")
+st.markdown("👩‍💻 Created with ❤️ by **Manar Hisham*")
