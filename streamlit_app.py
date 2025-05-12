@@ -6,7 +6,8 @@ import seaborn as sns
 import pickle
 
 # Load model
-model = pickle.load(open("churn_model.pkl", "rb"))
+with open("churn_model.pkl", "rb") as f:
+    model = pickle.load(f)
 
 # Load dataset for visualizations
 data = pd.read_csv("cleaned_data.csv")
