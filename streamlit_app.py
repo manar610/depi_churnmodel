@@ -6,6 +6,19 @@ import seaborn as sns
 import pickle
 
 st.set_page_config(layout="wide")
+# CSS to style left column
+st.markdown(
+    """
+    <style>
+    .left-column {
+        background-color: #e6f0ff;
+        padding: 20px;
+        border-radius: 10px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # Load model
 with open("churn_model.pkl", "rb") as f:
