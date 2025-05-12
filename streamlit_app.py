@@ -111,19 +111,19 @@ with right_col:
     # Feature importance bar chart
     importances = model.feature_importances_
     features = df_input.columns
-	indices = importances.argsort()[-10:][::-1]  
+    indices = importances.argsort()[-10:][::-1]  
 
- 	top_features = features[indices]
-	top_importances = importances[indices]
+    top_features = features[indices]
+    top_importances = importances[indices]
 
-	fig_feat, ax_feat = plt.subplots(figsize=(6, 4))
-	ax_feat.barh(range(len(indices)), top_importances, align='center', color='royalblue')
-	ax_feat.set_yticks(range(len(indices)))
-	ax_feat.set_yticklabels(top_features)
-	ax_feat.invert_yaxis()  # Most important on top
-	ax_feat.set_xlabel("Importance")
-	ax_feat.set_title("Top 10 Feature Importances")
-	st.pyplot(fig_feat)
+    fig_feat, ax_feat = plt.subplots(figsize=(6, 4))
+    ax_feat.barh(range(len(indices)), top_importances, align='center', color='royalblue')
+    ax_feat.set_yticks(range(len(indices)))
+    ax_feat.set_yticklabels(top_features)
+    ax_feat.invert_yaxis()  # Most important on top
+    ax_feat.set_xlabel("Importance")
+    ax_feat.set_title("Top 10 Feature Importances")
+    st.pyplot(fig_feat)
 	
     # Density plot for churned vs retained
     st.subheader("📈 Churned vs. Retained - Monthly Charges")
