@@ -6,19 +6,6 @@ import seaborn as sns
 import pickle
 
 st.set_page_config(layout="wide")
-# CSS to style left column
-st.markdown(
-    """
-    <style>
-    .left-column {
-        background-color: #e6f0ff;
-        padding: 20px;
-        border-radius: 10px;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
 
 # Load model
 with open("churn_model.pkl", "rb") as f:
@@ -30,11 +17,13 @@ data = pd.read_csv("cleaned_data.csv")
 st.title("📊 Customer Churn Prediction")
 
 # Split into two columns
-left_col, right_col = st.columns([1, 1])
+left_col, right_col = st.columns([1, 2])
 
 # Left side: Inputs (nested columns)
 with left_col:
-    st.markdown('<div class="left-column">', unsafe_allow_html=True)
+    st.markdown("""
+        <div style="background-color: #e6f0ff; padding: 20px; border-radius: 10px;">
+    """, unsafe_allow_html=True)
     st.header("🔧 Input Features")
     col1, col2 = st.columns([1, 1])
     with col1:
@@ -53,7 +42,7 @@ with left_col:
         "Credit card (automatic)", 
         "Electronic check", 
         "Mailed check"])
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
     total_charges = tenure * monthly_charges
     
 
