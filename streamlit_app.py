@@ -14,28 +14,13 @@ with open("churn_model.pkl", "rb") as f:
 # Load dataset for visualizations
 data = pd.read_csv("cleaned_data.csv")
 
-st.title("📊 Customer Churn Prediction")
+st.title("Customer Churn Prediction")
 
 # Split into two columns
 left_col, right_col = st.columns([1, 2])
 
 # Left side: Inputs (nested columns)
 with left_col:
-    with st.container():
-        st.markdown(
-            """
-            <style>
-            .left-panel {
-                background-color: #e6f2ff;  /* Light blue */
-                padding: 20px;
-                border-radius: 10px;
-                height: 100%;
-            }
-            </style>
-            <div class="left-panel">
-            """,
-            unsafe_allow_html=True
-        )
     st.header("🔧 Input Features")
     col1, col2 = st.columns([1, 1])
     with col1:
@@ -54,16 +39,13 @@ with left_col:
         "Credit card (automatic)", 
         "Electronic check", 
         "Mailed check"])
-    
-    # Close the div tag
-    st.markdown("</div>", unsafe_allow_html=True)
+        
     total_charges = tenure * monthly_charges
     
 
 # Right side: Prediction & Visuals
 with right_col:
     st.header("📈 Prediction Output")
-   
 
     # Create input dictionary (same as your earlier structure)
     input_data = {
@@ -112,7 +94,7 @@ with right_col:
 
     
     # Density plot for churned vs retained
-    st.subheader("📈 Churned vs. Retained - Monthly Charges")
+    st.subheader("📊 Churned vs. Retained - Monthly Charges")
     fig_kde, ax_kde = plt.subplots()
     sns.kdeplot(data=data[data['Churn'] == 1]['MonthlyCharges'], label="Churned", shade=True, color="#ff7f0e", ax=ax_kde)
     sns.kdeplot(data=data[data['Churn'] == 0]['MonthlyCharges'], label="Retained", shade=True, color="#1f77b4", ax=ax_kde)
