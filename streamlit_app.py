@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import pickle
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Load model
 with open("churn_model.pkl", "rb") as f:
