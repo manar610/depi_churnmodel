@@ -15,7 +15,7 @@ data = pd.read_csv("cleaned_data.csv")
 st.title("📊 Customer Churn Prediction")
 
 # Split into two columns
-left_col, right_col = st.columns([1, 1])
+left_col, right_col = st.columns([2, 1])
 
 # Left side: Inputs (nested columns)
 with left_col:
