@@ -116,7 +116,7 @@ with right_col:
     top_features = features[indices]
     top_importances = importances[indices]
 
-    fig_feat, ax_feat = plt.subplots(figsize=(6, 4))
+    fig_feat, ax_feat = plt.subplots()
     ax_feat.barh(range(len(indices)), top_importances, align='center', color='royalblue')
     ax_feat.set_yticks(range(len(indices)))
     ax_feat.set_yticklabels(top_features)
