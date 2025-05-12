@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pickle
 
+st.set_page_config(layout="wide")
+
 # Load model
 with open("churn_model.pkl", "rb") as f:
     model = pickle.load(f)
