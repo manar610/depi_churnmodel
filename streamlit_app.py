@@ -15,12 +15,12 @@ data = pd.read_csv("cleaned_data.csv")
 st.title("📊 Customer Churn Prediction")
 
 # Split into two columns
-left_col, right_col = st.columns(2)
+left_col, right_col = st.columns([1, 1])
 
 # Left side: Inputs (nested columns)
 with left_col:
     st.header("🔧 Input Features")
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns([1, 1])
     with col1:
         gender = st.selectbox("Gender", ["Male", "Female"])
         senior = st.selectbox("Senior Citizen", ["Yes", "No"])
