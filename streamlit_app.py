@@ -87,7 +87,7 @@ with right_col:
 
     df_input = pd.DataFrame([input_data])
 
-    if st.button("🚀 Predict Churn"):
+    if st.button("Predict Churn"):
         prediction = model.predict(df_input)[0]
         prob = model.predict_proba(df_input)[0][1]
         
@@ -95,15 +95,6 @@ with right_col:
             st.error(f"⚠️ Likely to Churn (Confidence: {prob:.2%})")
         else:
             st.success(f"✅ Unlikely to Churn (Confidence: {1 - prob:.2%})")
-
-        # Example plot (replace with your visualizations)
-        st.subheader("📊 Monthly Charges Distribution")
-        fig, ax = plt.subplots()
-        ax.hist(df_input['MonthlyCharges'], bins=10, color="skyblue")
-        ax.set_xlabel("Monthly Charges")
-        ax.set_ylabel("Frequency")
-        st.pyplot(fig)
-
 
     
     # Density plot for churned vs retained
