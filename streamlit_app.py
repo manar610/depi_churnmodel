@@ -1,105 +1,90 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 import pickle
 
 # Load model
-with open("churn_model.pkl", "rb") as f:
-    model = pickle.load(f)
+model = pickle.load(open("model.pkl", "rb"))
 
-# Sidebar
-with st.sidebar:
-    st.title("ℹ️ About")
-    st.markdown("""
-    This app predicts whether a telecom customer is likely to churn based on their service usage and account details. 
-    Just fill in the information and click **Predict Churn** to get results!
-    """)
+# Load dataset for visualizations
+data = pd.read_csv("cleaned_data.csv")
 
-# Title
-st.title("📞 Customer Churn Prediction")
-st.markdown("Please fill in the customer's details below:")
+# App title
+st.title("📊 Customer Churn Prediction")
 
-# Group input fields into two columns
-col1, col2 = st.columns(2)
+# Sidebar for inputs
+st.sidebar.header("Input Features")
 
-with col1:
-    gender = st.selectbox("Gender", ["Male", "Female"])
-    senior = st.selectbox("Senior Citizen", ["Yes", "No"])
-    partner = st.selectbox("Partner", ["Yes", "No"])
-    dependents = st.selectbox("Dependents", ["Yes", "No"])
-    tenure = st.slider("Tenure (Months)", 0, 72, 1)
+# Input fields
+tenure = st.sidebar.number_input("Customer Tenure", min_value=0, max_value=72, value=12)
+monthly_charges = st.sidebar.slider("Monthly Charges", 0.0, 200.0, 70.0)
+total_charges = st.sidebar.number_input("Total Charges", min_value=0.0, value=720.0)
+gender = st.sidebar.selectbox("Gender", ["Female", "Male"])
+internet_service = st.sidebar.selectbox("Internet Service", ["DSL", "Fiber optic", "No"])
+contract = st.sidebar.selectbox("Contract", ["Month-to-month", "One year", "Two year"])
 
-with col2:
-    paperless_billing = st.selectbox("Paperless Billing", ["Yes", "No"])
-    monthly_charges = st.number_input("Monthly Charges", min_value=0.0)
-    internet_service = st.selectbox("Internet Service", ["DSL", "Fiber optic", "No"])
-    contract = st.selectbox("Contract Type", ["Month-to-month", "One year", "Two year"])
-    payment_method = st.selectbox("Payment Method", [
-        "Bank transfer (automatic)", 
-        "Credit card (automatic)", 
-        "Electronic check", 
-        "Mailed check"])
-
-# Automatically calculated
-total_charges = tenure * monthly_charges
-
-st.markdown("---")
-st.subheader("🔍 Prediction Result")
-
-# One-hot encoded fields
-internet_fiber = 1 if internet_service == "Fiber optic" else 0
-internet_no = 1 if internet_service == "No" else 0
-contract_one_year = 1 if contract == "One year" else 0
-contract_two_year = 1 if contract == "Two year" else 0
-payment_credit = 1 if payment_method == "Credit card (automatic)" else 0
-payment_electronic = 1 if payment_method == "Electronic check" else 0
-payment_mailed = 1 if payment_method == "Mailed check" else 0
-
-# Input dictionary
-input_data = {
-    'gender': 1 if gender == "Male" else 0,
-    'SeniorCitizen': 1 if senior == "Yes" else 0,
-    'Partner': 1 if partner == "Yes" else 0,
-    'Dependents': 1 if dependents == "Yes" else 0,
-    'tenure': tenure,
-    'PhoneService': 1,  # Defaulted to 1
-    'PaperlessBilling': 1 if paperless_billing == "Yes" else 0,
-    'MonthlyCharges': monthly_charges,
-    'TotalCharges': total_charges,
-    'MultipleLines_No phone service': 0,
-    'MultipleLines_Yes': 0,
-    'InternetService_Fiber optic': internet_fiber,
-    'InternetService_No': internet_no,
-    'OnlineSecurity_No internet service': 1 if internet_service == "No" else 0,
-    'OnlineSecurity_Yes': 0,
-    'OnlineBackup_No internet service': 1 if internet_service == "No" else 0,
-    'OnlineBackup_Yes': 0,
-    'DeviceProtection_No internet service': 1 if internet_service == "No" else 0,
-    'DeviceProtection_Yes': 0,
-    'TechSupport_No internet service': 1 if internet_service == "No" else 0,
-    'TechSupport_Yes': 0,
-    'StreamingTV_No internet service': 1 if internet_service == "No" else 0,
-    'StreamingTV_Yes': 0,
-    'StreamingMovies_No internet service': 1 if internet_service == "No" else 0,
-    'StreamingMovies_Yes': 0,
-    'Contract_One year': contract_one_year,
-    'Contract_Two year': contract_two_year,
-    'PaymentMethod_Credit card (automatic)': payment_credit,
-    'PaymentMethod_Electronic check': payment_electronic,
-    'PaymentMethod_Mailed check': payment_mailed
+# Encoding inputs as needed for the model
+input_dict = {
+    "tenure": tenure,
+    "MonthlyCharges": monthly_charges,
+    "TotalCharges": total_charges,
+    "gender_Female": 1 if gender == "Female" else 0,
+    "gender_Male": 1 if gender == "Male" else 0,
+    "InternetService_DSL": 1 if internet_service == "DSL" else 0,
+    "InternetService_Fiber optic": 1 if internet_service == "Fiber optic" else 0,
+    "InternetService_No": 1 if internet_service == "No" else 0,
+    "Contract_Month-to-month": 1 if contract == "Month-to-month" else 0,
+    "Contract_One year": 1 if contract == "One year" else 0,
+    "Contract_Two year": 1 if contract == "Two year" else 0
 }
 
-# Convert to DataFrame
-df_input = pd.DataFrame([input_data])
+input_df = pd.DataFrame([input_dict])
 
-# Prediction
-if st.button("🎯 Predict Churn"):
-    prediction = model.predict(df_input)[0]
-    prob = model.predict_proba(df_input)[0][1]
-    if prediction == 1:
-        st.error(f"⚠️ The customer is likely to churn.\n\nConfidence: **{prob:.2%}**")
+# Predict button
+if st.sidebar.button("Predict"):
+    prediction = model.predict(input_df)
+
+    # Display prediction
+    if prediction[0] == 1:
+        st.error("❌ Prediction: Customer is likely to churn")
     else:
-        st.success(f"✅ The customer is unlikely to churn.\n\nConfidence: **{1 - prob:.2%}**")
+        st.success("✅ Prediction: Customer is not likely to churn")
 
-# Footer
-st.markdown("---")
-st.markdown("👩‍💻 Created with ❤️ by **Manar Hisham*")
+    # Feature importance and visualizations
+    st.subheader("📌 Feature Importance and Insights")
+
+    # Feature importance bar chart
+    importances = model.feature_importances_
+    features = input_df.columns
+    indices = np.argsort(importances)
+
+    fig_feat, ax_feat = plt.subplots()
+    ax_feat.barh(range(len(indices)), importances[indices], align='center')
+    ax_feat.set_yticks(range(len(indices)))
+    ax_feat.set_yticklabels(features[indices])
+    ax_feat.set_title('Feature Importance')
+    col1, col2 = st.columns(2)
+    with col1:
+        st.pyplot(fig_feat)
+
+    # Churn rate pie chart
+    churn_counts = data['Churn'].value_counts()
+    labels = ['Retained', 'Churned']
+    colors = ['#1f77b4', '#ff7f0e']
+    fig_pie, ax_pie = plt.subplots()
+    ax_pie.pie(churn_counts, labels=labels, autopct='%1.1f%%', startangle=90, colors=colors)
+    ax_pie.axis('equal')
+    with col2:
+        st.pyplot(fig_pie)
+
+    # Density plot for churned vs retained
+    st.subheader("📈 Churned vs. Retained - Monthly Charges")
+    fig_kde, ax_kde = plt.subplots()
+    sns.kdeplot(data=data[data['Churn'] == 1]['MonthlyCharges'], label="Churned", shade=True, color="#ff7f0e", ax=ax_kde)
+    sns.kdeplot(data=data[data['Churn'] == 0]['MonthlyCharges'], label="Retained", shade=True, color="#1f77b4", ax=ax_kde)
+    ax_kde.set_xlabel("Monthly Charges")
+    ax_kde.set_ylabel("Density")
+    ax_kde.legend()
+    st.pyplot(fig_kde)
