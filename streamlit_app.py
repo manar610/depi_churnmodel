@@ -93,7 +93,7 @@ with right_col:
             st.success(f"✅ Unlikely to Churn (Confidence: {1 - prob:.2%})")
 
     # Feature importance and visualizations
-    st.subheader("📌 Feature Importance (Top 10)")
+    #st.subheader("📌 Feature Importance (Top 10)")
     
     # Feature importance bar chart
     #importances = model.feature_importances_
